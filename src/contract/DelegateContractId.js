@@ -36,7 +36,7 @@ export default class DelegateContractId extends ContractId {
      */
     static fromString(text) {
         const contractId = ContractId.fromString(text);
-        const id = new DelegateContractId(contractId);
+        const id = DelegateContractId._fromContractId(contractId);
         id._checksum = contractId._checksum ?? null;
         return id;
     }
@@ -47,7 +47,7 @@ export default class DelegateContractId extends ContractId {
      * @returns {DelegateContractId}
      */
     static _fromProtobuf(id) {
-        return new DelegateContractId(ContractId._fromProtobuf(id));
+        return DelegateContractId._fromContractId(ContractId._fromProtobuf(id));
     }
 
     /**
@@ -55,14 +55,30 @@ export default class DelegateContractId extends ContractId {
      * @returns {DelegateContractId}
      */
     static fromBytes(bytes) {
-        return new DelegateContractId(ContractId.fromBytes(bytes));
+        return DelegateContractId._fromContractId(ContractId.fromBytes(bytes));
+    }
+
+    /**
+     * Copies shard, realm, num and the EVM address of a `ContractId`.
+     *
+     * @internal
+     * @param {ContractId} id
+     * @returns {DelegateContractId}
+     */
+    static _fromContractId(id) {
+        return new DelegateContractId(
+            id,
+            undefined,
+            undefined,
+            id.evmAddress != null ? id.evmAddress : undefined,
+        );
     }
 
     /**
      * @returns {DelegateContractId}
      */
     clone() {
-        const id = new DelegateContractId(this);
+        const id = DelegateContractId._fromContractId(this);
         id._checksum = this._checksum;
         return id;
     }
